@@ -1,6 +1,6 @@
 export default function Dashboard({ stats, upcoming }) {
   return (
-    <section className="panel">
+    <section id="dashboard" className="panel">
       <h2>Панель</h2>
       <div className="cards">
         <article>

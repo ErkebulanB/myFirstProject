@@ -6,7 +6,14 @@ import TaskForm from './components/TaskForm';
 import TaskList from './components/TaskList';
 import ChatBot from './components/ChatBot';
 
-const navItems = ['Панель', 'Задачи', 'AI-помощник', 'Дедлайны', 'Аналитика', 'Профиль и настройки'];
+const navItems = [
+  { label: 'Панель', href: '#dashboard' },
+  { label: 'Задачи', href: '#tasks' },
+  { label: 'AI-помощник', href: '#assistant' },
+  { label: 'Дедлайны', href: '#deadlines' },
+  { label: 'Аналитика', href: '#analytics' },
+  { label: 'Профиль и настройки', href: '#settings' },
+];
 
 function formatToday() {
   return new Intl.DateTimeFormat('ru-RU', { dateStyle: 'full' }).format(new Date());
@@ -85,8 +92,8 @@ export default function App() {
         <p>Умный планировщик учебной нагрузки.</p>
         <nav>
           {navItems.map((item) => (
-            <a key={item} href="#">
-              {item}
+            <a key={item.label} href={item.href}>
+              {item.label}
             </a>
           ))}
         </nav>
@@ -97,7 +104,7 @@ export default function App() {
         <main>
           <Dashboard stats={stats} upcoming={upcoming} />
 
-          <section className="panel">
+          <section id="tasks" className="panel">
             <div className="panel-head">
               <h2>Задачи</h2>
             </div>
@@ -114,12 +121,12 @@ export default function App() {
             />
           </section>
 
-          <section className="panel">
+          <section id="assistant" className="panel">
             <h2>AI-помощник</h2>
             <ChatBot tasks={tasks} onSend={api.sendChat} />
           </section>
 
-          <section className="panel">
+          <section id="deadlines" className="panel">
             <h2>Дедлайны</h2>
             <ul className="deadline-list">
               {upcoming.length ? (
@@ -134,7 +141,7 @@ export default function App() {
             </ul>
           </section>
 
-          <section className="panel">
+          <section id="analytics" className="panel">
             <h2>Аналитика</h2>
             <div className="metric">
               <span>Процент выполнения</span>
@@ -156,7 +163,7 @@ export default function App() {
             </div>
           </section>
 
-          <section className="panel">
+          <section id="settings" className="panel">
             <h2>Профиль и настройки</h2>
             <ul>
               <li>Настройки уведомлений</li>
