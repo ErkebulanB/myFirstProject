@@ -1,14 +1,14 @@
-export default function Header() {
+export default function Header({ today }) {
   return (
-    <header className="header">
-      <h1>Student Planner</h1>
-      <p>Учебный планировщик задач с HCI-подходом и AI-помощником.</p>
-      <nav aria-label="Навигация по странице">
-        <a href="#tasks">Задачи</a>
-        <a href="#accessibility">Доступность</a>
-        <a href="#chat">Чатбот</a>
-        <a href="#testing">Тестирование</a>
-      </nav>
+    <header className="topbar">
+      <label className="search-wrap">
+        <span className="sr-only">Search</span>
+        <input type="search" placeholder="Search tasks, subjects, notes..." aria-label="Search" />
+      </label>
+      <div className="topbar-right">
+        <span>{today}</span>
+        <button className="profile-btn" aria-label="Profile">AS</button>
+      </div>
     </header>
   );
 }

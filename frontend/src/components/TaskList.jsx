@@ -1,40 +1,14 @@
 import TaskItem from './TaskItem';
 
-export default function TaskList({ tasks, filter, onFilterChange, onToggleDone, onDelete, statusMessage }) {
-  const filtered = tasks.filter((task) => {
-    if (filter === 'active') return !task.done;
-    if (filter === 'done') return task.done;
-    return true;
-  });
-
+export default function TaskList({ tasks, onToggleDone, onDelete, statusMessage, filterStatus, filterPriority, setFilterStatus, setFilterPriority }) {
   return (
-    <section className="card" id="tasks">
-      <h2>Список задач</h2>
-      <div className="filters" role="group" aria-label="Фильтры задач">
-        <button className={filter === 'all' ? 'active' : ''} onClick={() => onFilterChange('all')}>
-          Все
-        </button>
-        <button className={filter === 'active' ? 'active' : ''} onClick={() => onFilterChange('active')}>
-          Активные
-        </button>
-        <button className={filter === 'done' ? 'active' : ''} onClick={() => onFilterChange('done')}>
-          Выполненные
-        </button>
+    <section>
+      <div className="filters">
+        <label>Status<select value={filterStatus} onChange={(e)=>setFilterStatus(e.target.value)}><option value="all">All</option><option value="active">Active</option><option value="done">Completed</option></select></label>
+        <label>Priority<select value={filterPriority} onChange={(e)=>setFilterPriority(e.target.value)}><option value="all">All</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select></label>
       </div>
-
-      <p aria-live="polite" className="live-status">
-        {statusMessage}
-      </p>
-
-      {filtered.length === 0 ? (
-        <p className="empty-state">Нет задач для выбранного фильтра. Добавьте новую задачу выше.</p>
-      ) : (
-        <ul className="task-list">
-          {filtered.map((task) => (
-            <TaskItem key={task.id} task={task} onToggleDone={onToggleDone} onDelete={onDelete} />
-          ))}
-        </ul>
-      )}
+      <p aria-live="polite">{statusMessage}</p>
+      {tasks.length === 0 ? <div className="empty">No tasks found. Create your first task to get started.</div> : <ul className="task-list">{tasks.map((task)=><TaskItem key={task.id} task={task} onToggleDone={onToggleDone} onDelete={onDelete} />)}</ul>}
     </section>
   );
 }

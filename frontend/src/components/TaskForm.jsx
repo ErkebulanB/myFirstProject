@@ -1,70 +1,33 @@
 import { useState } from 'react';
 
-const initialState = {
-  title: '',
-  subject: '',
-  priority: 'medium',
-  deadline: '',
-  note: '',
-};
+const initial = { title: '', subject: '', priority: 'medium', deadline: '', note: '' };
 
-export default function TaskForm({ onSubmit, loading, titleInputRef }) {
-  const [form, setForm] = useState(initialState);
+export default function TaskForm({ onSubmit }) {
+  const [form, setForm] = useState(initial);
   const [status, setStatus] = useState('');
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setStatus('');
-
-    if (!form.title || !form.subject || !form.priority || !form.deadline) {
-      setStatus('Заполните обязательные поля.');
-      return;
-    }
-
+  const submit = async (e) => {
+    e.preventDefault();
+    if (!form.title || !form.subject || !form.deadline) return setStatus('Please fill all required fields.');
     try {
       await onSubmit(form);
-      setForm(initialState);
-      setStatus('Задача успешно добавлена.');
-    } catch (error) {
-      setStatus(error.message || 'Не удалось добавить задачу.');
+      setForm(initial);
+      setStatus('Task added.');
+    } catch (err) {
+      setStatus(err.message || 'Could not add task.');
     }
   };
 
   return (
-    <section className="card">
-      <h2>Добавить задачу</h2>
-      <form onSubmit={handleSubmit} className="task-form">
-        <label htmlFor="title">Название задачи</label>
-        <input id="title" name="title" ref={titleInputRef} value={form.title} onChange={handleChange} />
-
-        <label htmlFor="subject">Предмет</label>
-        <input id="subject" name="subject" value={form.subject} onChange={handleChange} />
-
-        <label htmlFor="priority">Приоритет</label>
-        <select id="priority" name="priority" value={form.priority} onChange={handleChange}>
-          <option value="low">Низкий</option>
-          <option value="medium">Средний</option>
-          <option value="high">Высокий</option>
-        </select>
-
-        <label htmlFor="deadline">Дедлайн</label>
-        <input id="deadline" name="deadline" type="date" value={form.deadline} onChange={handleChange} />
-
-        <label htmlFor="note">Комментарий</label>
-        <textarea id="note" name="note" value={form.note} onChange={handleChange} rows="3" />
-
-        <button type="submit" disabled={loading}>
-          {loading ? 'Сохранение...' : 'Добавить задачу'}
-        </button>
-        <p aria-live="polite" className="live-status">
-          {status}
-        </p>
-      </form>
-    </section>
+    <form onSubmit={submit} className="task-form panel-soft">
+      <h3>Create task</h3>
+      <label>Task title<input name="title" value={form.title} onChange={(e)=>setForm({...form,title:e.target.value})} /></label>
+      <label>Subject<input name="subject" value={form.subject} onChange={(e)=>setForm({...form,subject:e.target.value})} /></label>
+      <label>Priority<select value={form.priority} onChange={(e)=>setForm({...form,priority:e.target.value})}><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select></label>
+      <label>Deadline<input type="date" value={form.deadline} onChange={(e)=>setForm({...form,deadline:e.target.value})} /></label>
+      <label>Notes<textarea value={form.note} onChange={(e)=>setForm({...form,note:e.target.value})} rows="3" /></label>
+      <button type="submit">Add task</button>
+      <p aria-live="polite">{status}</p>
+    </form>
   );
 }
