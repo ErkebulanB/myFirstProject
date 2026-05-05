@@ -1,2 +1,0 @@
-# myFirstProject
-for education

@@ -1,22 +1,26 @@
 import { useState } from 'react';
 
-const prompts = ['Plan my study day', 'What should I do first?', 'Summarize my deadlines'];
+const prompts = ['Спланировать день', 'Что сделать первым?', 'Суммировать дедлайны'];
 
 export default function ChatBot({ tasks, onSend }) {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  const [items, setItems] = useState([{ role: 'assistant', text: 'Hi! I can help plan your study workload.' }]);
+  const [items, setItems] = useState([
+    { role: 'assistant', text: 'Привет! Я помогу распределить учебные задачи, выбрать приоритет и составить план.' },
+  ]);
 
   const send = async (text) => {
     if (!text.trim()) return;
-    setItems((p) => [...p, { role: 'user', text }]);
+
+    setItems((prev) => [...prev, { role: 'user', text }]);
     setLoading(true);
     setMessage('');
+
     try {
       const res = await onSend({ message: text, tasks });
-      setItems((p) => [...p, { role: 'assistant', text: res.reply }]);
+      setItems((prev) => [...prev, { role: 'assistant', text: res.reply }]);
     } catch {
-      setItems((p) => [...p, { role: 'assistant', text: 'Service unavailable. Please try again later.' }]);
+      setItems((prev) => [...prev, { role: 'assistant', text: 'Сервис временно недоступен. Попробуйте позже.' }]);
     } finally {
       setLoading(false);
     }
@@ -24,12 +28,40 @@ export default function ChatBot({ tasks, onSend }) {
 
   return (
     <div className="chat">
-      <div className="prompt-row">{prompts.map((p)=><button key={p} className="ghost" onClick={()=>send(p)}>{p}</button>)}</div>
-      <div className="chat-box" aria-live="polite">{items.map((m,i)=><p key={i} className={`msg ${m.role}`}>{m.text}</p>)}</div>
-      <form onSubmit={(e)=>{e.preventDefault();send(message);}} className="chat-form">
-        <label htmlFor="chat">Message</label>
-        <input id="chat" value={message} onChange={(e)=>setMessage(e.target.value)} placeholder="Ask StudyFlow AI..." />
-        <button type="submit" disabled={loading}>{loading ? 'Thinking...' : 'Send'}</button>
+      <div className="prompt-row" aria-label="Быстрые запросы">
+        {prompts.map((prompt) => (
+          <button key={prompt} className="ghost" type="button" onClick={() => send(prompt)}>
+            {prompt}
+          </button>
+        ))}
+      </div>
+
+      <div className="chat-box" aria-live="polite">
+        {items.map((item, index) => (
+          <div key={`${item.role}-${index}`} className={`msg ${item.role}`}>
+            <span>{item.text}</span>
+          </div>
+        ))}
+        {loading && <div className="msg assistant"><span>Бот думает...</span></div>}
+      </div>
+
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          send(message);
+        }}
+        className="chat-form"
+      >
+        <label htmlFor="chat">Сообщение</label>
+        <div className="chat-input-row">
+          <input
+            id="chat"
+            value={message}
+            onChange={(event) => setMessage(event.target.value)}
+            placeholder="Спросите StudyFlow AI..."
+          />
+          <button type="submit" disabled={loading}>{loading ? 'Ожидание...' : 'Отправить'}</button>
+        </div>
       </form>
     </div>
   );
